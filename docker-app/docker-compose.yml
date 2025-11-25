@@ -9,13 +9,11 @@ services:
       POSTGRES_DB: myapp
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
-    ports:
-      - "5432:5432"              # optional, needed only if you want to connect from outside EC2
     volumes:
       - db_data:/var/lib/postgresql/data
 
   web:
-    build: .
+    build: ./app
     container_name: myapp_web
     restart: unless-stopped
     depends_on:
@@ -23,8 +21,8 @@ services:
     environment:
       DATABASE_URL: postgresql://myuser:mypassword@db:5432/myapp
     ports:
-      - "80:8000"                # app on port 80
-    # command: whatever your app needs
+      - "80:8000"   # external:internal
+    command: gunicorn -b 0.0.0.0:8000 app:app
 
 volumes:
   db_data:
