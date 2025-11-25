@@ -4,7 +4,8 @@ from sqlalchemy import create_engine, text
 
 app = Flask(__name__)
 
-DATABASE_URL = os.environ.get("DATABASE_URL")
+# Default to local PostgreSQL if not in Docker environment
+DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://myuser:mypassword@localhost:5432/myapp")
 
 # Create SQLAlchemy engine
 engine = create_engine(DATABASE_URL, echo=False, future=True)
