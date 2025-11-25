@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: myapp_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: myapp
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  web:
+    build: ./app
+    container_name: myapp_web
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://myuser:mypassword@db:5432/myapp
+    ports:
+      - "80:8000"   # external:internal
+    command: gunicorn -b 0.0.0.0:8000 app:app
+
+volumes:
+  db_data:
